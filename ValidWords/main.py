@@ -74,13 +74,18 @@ def narrow_perms(
 def print_output(max_perms: int, all_perms: set[str], letters: tuple[str, ...]) -> None:
     print(f"found {len(all_perms):,} of {max_perms:,} for ({','.join(letters)})")
 
-    all_perms_iterator = (i for i in all_perms)
+    sorted_perms = sorted(all_perms, key=len, reverse=True)
+    max_len = len(sorted_perms)
+    index = 0
 
-    while next_perm := next(all_perms_iterator, None):
+    while index < max_len:
         try:
             count_sol = min(
-                int(input("How many solutions would you like to see? (0 to exit) ")), 10
+                int(input("How many solutions would you like to see? (0 to exit) ")),
+                1_000,
+                max_len - index - 1,
             )
+
         except ValueError:
             continue
 
@@ -88,11 +93,14 @@ def print_output(max_perms: int, all_perms: set[str], letters: tuple[str, ...]) 
             break
 
         print("{ ", end="")
-        for _ in range(count_sol - 1):
-            if not (next_item := next(all_perms_iterator, None)):
-                break
-            print(next_item, end=" : ")
-        print(f"{next_perm}", "}")
+        for _ in range(count_sol):
+            print(sorted_perms[index], end=" : ")
+
+            index += 1
+
+        print(f"{sorted_perms[index]}", "}")
+
+        index += 1
 
 
 def main(*args: str, **kwargs: Any) -> int:
